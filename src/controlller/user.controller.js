@@ -37,7 +37,7 @@ class UserController {
       console.log(username, password);
       // Foydalanuvchini email orqali qidirish
       const user = await User.findOne({ where: { username } });
-      console.log(user)
+      console.log(user);
       if (!user) {
         // Foydalanuvchi topilmagan
         res.status(404).json({ error: "Foydalanuvchi topilmadi" });
@@ -92,27 +92,28 @@ class UserController {
       handleError(res, error);
     }
   };
-  protectedRoute = async (
-      req,
-      res
-    ) => {
-      try {
-        let token = req.headers.token;
-        console.log(token);
-        let { id } = JWT.VERIFY(token);
-        const user = await User.findByPk(id)
-        if (!user) {
-          res.status(404).json({ error: "User not found" });
-          return;
-        }
-        res.status(200).send({
-          succsess: true,
-          data: user,
-        });
-      } catch (error) {
-        handleError(res, error);
+  protectedRoute = async (req, res) => {
+    try {
+      console.log(req);
+      let token = req.headers.authorization?.split(" ")[1];
+      // let token = req.headers.token;
+      console.log(token);
+      // console.log(token2);
+      let { id } = JWT.VERIFY(token);
+      console.log(id);
+      const user = await User.findByPk(id);
+      if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
       }
-    };
+      res.status(200).send({
+        succsess: true,
+        data: user,
+      });
+    } catch (error) {
+      handleError(res, error);
+    }
+  };
   // Update user by ID
   //   public updateUser = async (req: Request, res: Response): Promise<void> => {
   //     const { id } = req.params;
